@@ -7,6 +7,4 @@ import { SharedModule } from '../../shared.module';
     templateUrl: './busy.component.html',
     styleUrl: './busy.component.scss'
 })
-export class BusyComponent {
-
-}
+export class BusyComponent {}

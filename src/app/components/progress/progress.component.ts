@@ -9,9 +9,7 @@ import { SharedModule } from '../../shared.module';
 })
 export class ProgressComponent {
   readonly value = input.required<number>();
-
   readonly max = input.required<number>();
-
+  
   readonly ratio = computed(() => this.value() / this.max());
-
 }
