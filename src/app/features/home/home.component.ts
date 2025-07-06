@@ -7,6 +7,4 @@ import { SharedModule } from '../../shared.module';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export default class HomeComponent {
-
-}
+export default class HomeComponent {}

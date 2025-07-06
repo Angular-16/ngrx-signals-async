@@ -24,10 +24,10 @@ export const QuizStore = signalStore(
 
         return {
             currentQuestionIndex,
-            isDone, 
-            currentQuestion, 
-            questionsCount, 
-            correctCount, 
+            isDone,
+            currentQuestion,
+            questionsCount,
+            correctCount,
             title,
             captionColors,
             answerColors

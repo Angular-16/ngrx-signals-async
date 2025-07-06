@@ -9,5 +9,5 @@ export function getCorrectCount(answers: number[], questions: Question[]): numbe
         }
     }
 
-    return res;  
+    return res;
 }

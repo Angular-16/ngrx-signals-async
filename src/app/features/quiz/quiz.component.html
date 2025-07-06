@@ -13,10 +13,10 @@
 </app-toolbar>
 <div class="main">
     @if(store.isDone()) {
-        <app-done/>
+        <app-done />
     } @else {
         <app-progress [value]="store.currentQuestionIndex()"
-            [max]="store.questionsCount()"/>
-        <app-question-presenter/>
+            [max]="store.questionsCount()" />
+        <app-question-presenter />
     }
 </div>

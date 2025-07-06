@@ -17,5 +17,4 @@ import { AppStore } from '../../store/app.store';
 export default class QuizPageComponent {
   readonly appStore = inject(AppStore);
   readonly store = inject(QuizStore);
-
 }
