@@ -3,11 +3,12 @@ import { initialAppSlice } from "./app.slice";
 import { inject } from "@angular/core";
 import { changeLanguage, resetLanguages, setBusy, setDictionary } from "./app.updaters";
 import { DictionariesService } from "../services/dictionaries.service";
-import { firstValueFrom } from "rxjs";
+import { map, switchAll, tap } from "rxjs";
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
 export const AppStore = signalStore(
-    { providedIn: 'root' }, 
-    withState(initialAppSlice), 
+    { providedIn: 'root' },
+    withState(initialAppSlice),
     withProps(_ => {
         const _dictionariesService = inject(DictionariesService);
         const _languages = _dictionariesService.languages;
@@ -18,22 +19,26 @@ export const AppStore = signalStore(
         }
     }),
     withMethods(store => {
-        const invalidateDictionary = async () => {
-            patchState(store, setBusy(true));
-            const dictionary = await firstValueFrom(
-                store._dictionariesService.getDictionaryWithDelay(store.selectedLanguage())
+        const _invalidateDictionary = rxMethod<string>(input$ => {
+            const output$ = input$.pipe(
+                tap(_ => patchState(store, setBusy(true))),
+                map(lang => store._dictionariesService.getDictionaryWithDelay(lang)),
+                switchAll(),
+                tap(dict => patchState(store, setDictionary(dict), setBusy(false)))
             );
-            patchState(store, setBusy(false), setDictionary(dictionary));
+
+            return output$;
         }
-        
+    );
+
         return {
-            changeLanguage: async () => {
+            changeLanguage: () => {
                 patchState(store, changeLanguage(store._languages));
-                await invalidateDictionary();
+                _invalidateDictionary(store.selectedLanguage());
             },
-            _resetLanguages: async () => {
+            _resetLanguages: () => {
                 patchState(store, resetLanguages(store._languages));
-                await invalidateDictionary();
+                _invalidateDictionary(store.selectedLanguage());
             }
         }
     }),
