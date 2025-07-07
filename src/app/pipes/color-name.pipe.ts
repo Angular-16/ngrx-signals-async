@@ -10,5 +10,4 @@ export class ColorNamePipe implements PipeTransform {
   transform(value: string): string {
     return displayNameOfColor(value);
   }
-
 }
