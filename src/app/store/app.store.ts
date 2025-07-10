@@ -1,10 +1,14 @@
 import { patchState, signalStore, withHooks, withMethods, withProps, withState } from "@ngrx/signals";
-import { initialAppSlice } from "./app.slice";
 import { inject } from "@angular/core";
-import { changeLanguage, resetLanguages, setBusy, setDictionary } from "./app.updaters";
-import { DictionariesService } from "../services/dictionaries.service";
-import { map, switchAll, tap } from "rxjs";
+import { map, switchAll, switchMap, tap } from "rxjs";
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { tapResponse } from '@ngrx/operators';
+
+import { DictionariesService } from "../services/dictionaries.service";
+import { initialAppSlice } from "./app.slice";
+import { changeLanguage, resetLanguages, setBusy, setDictionary } from "./app.updaters";
+import { NotificationsService } from "../services/notifications.service";
+import { ColorQuizGeneratorService } from "../services/color-quiz-generator.service";
 
 export const AppStore = signalStore(
     { providedIn: 'root' },
@@ -15,16 +19,22 @@ export const AppStore = signalStore(
 
         return {
             _dictionariesService,
-            _languages
+            _languages,
+            _notification: inject(NotificationsService),
+            _quizGeneratorService: inject(ColorQuizGeneratorService)
         }
     }),
     withMethods(store => {
         const _invalidateDictionary = rxMethod<string>(input$ => {
             const output$ = input$.pipe(
                 tap(_ => patchState(store, setBusy(true))),
-                map(lang => store._dictionariesService.getDictionaryWithDelay(lang)),
-                switchAll(),
-                tap(dict => patchState(store, setDictionary(dict), setBusy(false)))
+                switchMap(lang => store._dictionariesService.getDictionaryWithDelay(lang).pipe(
+                    tapResponse({
+                        next: dict => patchState(store, setDictionary(dict), setBusy(false)),
+                        error: err => store._notification.error(`${err}`),
+                        finalize: () => patchState(store, setBusy(false))
+                    })
+                ))
             );
 
             return output$;
