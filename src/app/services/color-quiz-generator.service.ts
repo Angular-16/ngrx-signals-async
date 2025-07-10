@@ -7,10 +7,10 @@ import { randomColorQuiz } from "./helpers";
 export class ColorQuizGeneratorService {
     createRandomQuizAsync(): Observable<Question[]> {
         return of(1).pipe(
-            map(_ => randomColorQuiz()), 
+            map(_ => randomColorQuiz()),
             delay(2000)
-        );        
-    }    
+        );
+    }
 
     createRandomQuizSync(): Question[] {
         return randomColorQuiz();
