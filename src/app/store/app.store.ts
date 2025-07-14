@@ -25,8 +25,7 @@ export const AppStore = signalStore(
         }
     }),
     withMethods(store => {
-        const _invalidateDictionary = rxMethod<string>(input$ => {
-            const output$ = input$.pipe(
+        const _invalidateDictionary = rxMethod<string>(input$ => input$.pipe(
                 tap(_ => patchState(store, setBusy(true))),
                 switchMap(lang => store._dictionariesService.getDictionaryWithDelay(lang).pipe(
                     tapResponse({
@@ -35,21 +34,14 @@ export const AppStore = signalStore(
                         finalize: () => patchState(store, setBusy(false))
                     })
                 ))
-            );
-
-            return output$;
-        }
+            )
     );
 
+        _invalidateDictionary(store.selectedLanguage);
+
         return {
-            changeLanguage: () => {
-                patchState(store, changeLanguage(store._languages));
-                _invalidateDictionary(store.selectedLanguage());
-            },
-            _resetLanguages: () => {
-                patchState(store, resetLanguages(store._languages));
-                _invalidateDictionary(store.selectedLanguage());
-            }
+            changeLanguage: () => patchState(store, changeLanguage(store._languages)),
+            _resetLanguages: () => patchState(store, resetLanguages(store._languages))
         }
     }),
     withHooks(store => ({
