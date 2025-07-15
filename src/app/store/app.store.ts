@@ -1,8 +1,9 @@
 import { patchState, signalStore, withHooks, withMethods, withProps, withState } from "@ngrx/signals";
 import { inject } from "@angular/core";
-import { map, switchAll, switchMap, tap } from "rxjs";
+import { switchMap, tap } from "rxjs";
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
+import { withDevtools } from '@angular-architects/ngrx-toolkit';
 
 import { DictionariesService } from "../services/dictionaries.service";
 import { initialAppSlice } from "./app.slice";
@@ -13,6 +14,7 @@ import { ColorQuizGeneratorService } from "../services/color-quiz-generator.serv
 export const AppStore = signalStore(
     { providedIn: 'root' },
     withState(initialAppSlice),
+    withDevtools('app-store'),
     withProps(_ => {
         const _dictionariesService = inject(DictionariesService);
         const _languages = _dictionariesService.languages;

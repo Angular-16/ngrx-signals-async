@@ -9,9 +9,11 @@ import { AppStore } from "../../../store/app.store";
 import { ColorQuizGeneratorService } from "../../../services/color-quiz-generator.service";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { exhaustAll, map, tap } from "rxjs";
+import { withDevtools } from "@angular-architects/ngrx-toolkit";
 
 export const QuizStore = signalStore(
     withState(initialQuizSlice),
+    withDevtools('quiz-store'),
     withProps(_ => ({
         _generatorService: inject(ColorQuizGeneratorService)
     })),
